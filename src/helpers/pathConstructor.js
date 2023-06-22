@@ -12,6 +12,15 @@ export class PathConstructor extends State {
     }
   }
 
+  async isFileExist(path) {
+    try {
+      (await open(path)).close();
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
   async resolvePath(currentPath, dir) {
     try {
       const path = resolve(currentPath, dir);
@@ -30,6 +39,17 @@ export class PathConstructor extends State {
     }
 
     this.setCurrentPath(resolvePath);
+    return resolvePath;
+  }
+
+  async pathToFile(path, file) {
+    const resolvePath = await this.resolvePath(path, file);
+    const isFileExist = await this.isFileExist(resolvePath);
+
+    if (!isFileExist) {
+      throw new Error(messageList.error.operationFailed);
+    }
+
     return resolvePath;
   }
 }

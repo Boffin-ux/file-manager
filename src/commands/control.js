@@ -1,11 +1,13 @@
 import { messageList } from '../constants/messageList.js';
 import { Navigation } from './navigation.js';
+import { Hash } from './hash.js';
 import { COMMANDS } from '../constants/commands.js';
 
 export class Control {
   constructor(pathState, userName) {
     this.userName = userName;
     this.navigation = new Navigation(pathState);
+    this.hash = new Hash(pathState);
   }
 
   exit(userName) {
@@ -45,6 +47,13 @@ export class Control {
           throw new Error(messageList.error.invalidInput);
         }
         await this.navigation.cdControl(...checkArgs);
+        break;
+
+      case COMMANDS.hash:
+        if (!checkArgs || checkArgs.length > 1) {
+          throw new Error(messageList.error.invalidInput);
+        }
+        await this.hash.calcHash(...checkArgs);
         break;
 
       case COMMANDS.exit:
