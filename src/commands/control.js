@@ -3,6 +3,7 @@ import { Navigation } from './navigation.js';
 import { Hash } from './hash.js';
 import { FileSystem } from './fileSystem.js';
 import { Brotli } from './brotli.js';
+import { SysInfo } from './sysInfo.js';
 import { COMMANDS } from '../constants/commands.js';
 
 export class Control {
@@ -12,6 +13,7 @@ export class Control {
     this.hash = new Hash(pathState);
     this.fs = new FileSystem(pathState);
     this.brotli = new Brotli(pathState);
+    this.sysInfo = new SysInfo(pathState);
   }
 
   async _runCommand(command, ...args) {
@@ -100,6 +102,13 @@ export class Control {
           throw new Error(messageList.error.invalidInput);
         }
         await this.brotli.decompress(...checkArgs);
+        break;
+
+      case COMMANDS.os:
+        if (!checkArgs || checkArgs.length > 1) {
+          throw new Error(messageList.error.invalidInput);
+        }
+        this.sysInfo.runWithArg(...checkArgs);
         break;
 
       case COMMANDS.exit:
