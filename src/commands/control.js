@@ -2,6 +2,7 @@ import { messageList } from '../constants/messageList.js';
 import { Navigation } from './navigation.js';
 import { Hash } from './hash.js';
 import { FileSystem } from './fileSystem.js';
+import { Brotli } from './brotli.js';
 import { COMMANDS } from '../constants/commands.js';
 
 export class Control {
@@ -10,23 +11,10 @@ export class Control {
     this.navigation = new Navigation(pathState);
     this.hash = new Hash(pathState);
     this.fs = new FileSystem(pathState);
+    this.brotli = new Brotli(pathState);
   }
 
-  exit(userName) {
-    const finishMsg = `Thank you for using File Manager, ${userName}, goodbye!`;
-    console.log(finishMsg);
-    process.exit();
-  }
-
-  async parseInput(text) {
-    const [command, ...args] = text.split(' ');
-    if (!text || args.length > 2) {
-      throw new Error(messageList.error.invalidInput)
-    }
-    return await this.runCommand(command, ...args);
-  }
-
-  async runCommand(command, ...args) {
+  async _runCommand(command, ...args) {
     const checkArgs = args.length > 0 ? args : null;
 
     switch (command) {
@@ -100,6 +88,20 @@ export class Control {
         await this.fs.moveFile(...checkArgs);
         break;
 
+      case COMMANDS.compress:
+        if (!checkArgs || checkArgs.length !== 2) {
+          throw new Error(messageList.error.invalidInput);
+        }
+        await this.brotli.compress(...checkArgs);
+        break;
+
+      case COMMANDS.decompress:
+        if (!checkArgs || checkArgs.length !== 2) {
+          throw new Error(messageList.error.invalidInput);
+        }
+        await this.brotli.decompress(...checkArgs);
+        break;
+
       case COMMANDS.exit:
         if (checkArgs) {
           throw new Error(messageList.error.invalidInput);
@@ -109,5 +111,19 @@ export class Control {
 
       default: throw new Error(messageList.error.invalidInput);
     }
+  }
+
+  async parseInput(text) {
+    const [command, ...args] = text.split(' ');
+    if (!text || args.length > 2) {
+      throw new Error(messageList.error.invalidInput)
+    }
+    return await this._runCommand(command, ...args);
+  }
+
+  exit(userName) {
+    const finishMsg = `Thank you for using File Manager, ${userName}, goodbye!`;
+    console.log(finishMsg);
+    process.exit();
   }
 }

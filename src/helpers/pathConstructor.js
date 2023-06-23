@@ -4,7 +4,7 @@ import { messageList } from '../constants/messageList.js';
 import { State } from '../state.js';
 
 export class PathConstructor extends State {
-  async checkIsDir(path) {
+  async _checkIsDir(path) {
     try {
       return (await stat(path)).isDirectory();
     } catch (err) {
@@ -12,7 +12,7 @@ export class PathConstructor extends State {
     }
   }
 
-  async isFileExist(path) {
+  async _isFileExist(path) {
     try {
       (await open(path)).close();
       return true;
@@ -32,7 +32,7 @@ export class PathConstructor extends State {
 
   async setPath(path, dir) {
     const resolvePath = await this.resolvePath(path, dir);
-    const isDir = await this.checkIsDir(resolvePath);
+    const isDir = await this._checkIsDir(resolvePath);
 
     if (!isDir) {
       throw new Error(messageList.error.operationFailed);
@@ -44,7 +44,7 @@ export class PathConstructor extends State {
 
   async pathToFile(path, file) {
     const resolvePath = await this.resolvePath(path, file);
-    const isFileExist = await this.isFileExist(resolvePath);
+    const isFileExist = await this._isFileExist(resolvePath);
 
     if (!isFileExist) {
       throw new Error(messageList.error.operationFailed);
@@ -55,8 +55,8 @@ export class PathConstructor extends State {
 
   async targetPath(path, file) {
     const resolvePath = await this.resolvePath(path, file);
-    const isFileExist = await this.isFileExist(resolvePath);
-    const isDir = await this.checkIsDir(resolve(path));
+    const isFileExist = await this._isFileExist(resolvePath);
+    const isDir = await this._checkIsDir(resolve(path));
 
     if (isFileExist || !isDir) {
       throw new Error(messageList.error.operationFailed);
