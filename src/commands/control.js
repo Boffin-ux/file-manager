@@ -16,103 +16,101 @@ export class Control {
     this.exit = exitCb;
   }
 
-  async _runCommand(command, ...args) {
-    const checkArgs = args.length > 0 ? args : null;
-
+  async _runCommand(command, args) {
     switch (command) {
       case COMMANDS.up:
-        if (checkArgs) {
+        if (args) {
           throw new Error(messageList.error.invalidInput);
         }
         await this.navigation.upControl();
         break;
 
       case COMMANDS.ls:
-        if (checkArgs) {
+        if (args) {
           throw new Error(messageList.error.invalidInput);
         }
         await this.navigation.lsControl();
         break;
 
       case COMMANDS.cd:
-        if (!checkArgs || checkArgs.length > 1) {
+        if (!args || args.length > 1) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.navigation.cdControl(...checkArgs);
+        await this.navigation.cdControl(...args);
         break;
 
       case COMMANDS.hash:
-        if (!checkArgs || checkArgs.length > 1) {
+        if (!args || args.length > 1) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.hash.calcHash(...checkArgs);
+        await this.hash.calcHash(...args);
         break;
 
       case COMMANDS.add:
-        if (!checkArgs || checkArgs.length > 1) {
+        if (!args || args.length > 1) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.fs.addFile(...checkArgs);
+        await this.fs.addFile(...args);
         break;
 
       case COMMANDS.cat:
-        if (!checkArgs || checkArgs.length > 1) {
+        if (!args || args.length > 1) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.fs.cat(...checkArgs);
+        await this.fs.cat(...args);
         break;
 
       case COMMANDS.rm:
-        if (!checkArgs || checkArgs.length > 1) {
+        if (!args || args.length > 1) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.fs.removeFile(...checkArgs);
+        await this.fs.removeFile(...args);
         break;
 
       case COMMANDS.cp:
-        if (!checkArgs || checkArgs.length !== 2) {
+        if (!args || args.length !== 2) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.fs.copyFile(...checkArgs);
+        await this.fs.copyFile(...args);
         break;
 
       case COMMANDS.rn:
-        if (!checkArgs || checkArgs.length !== 2) {
+        if (!args || args.length !== 2) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.fs.renameFile(...checkArgs);
+        await this.fs.renameFile(...args);
         break;
 
       case COMMANDS.mv:
-        if (!checkArgs || checkArgs.length !== 2) {
+        if (!args || args.length !== 2) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.fs.moveFile(...checkArgs);
+        await this.fs.moveFile(...args);
         break;
 
       case COMMANDS.compress:
-        if (!checkArgs || checkArgs.length !== 2) {
+        if (!args || args.length !== 2) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.brotli.compress(...checkArgs);
+        await this.brotli.compress(...args);
         break;
 
       case COMMANDS.decompress:
-        if (!checkArgs || checkArgs.length !== 2) {
+        if (!args || args.length !== 2) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.brotli.decompress(...checkArgs);
+        await this.brotli.decompress(...args);
         break;
 
       case COMMANDS.os:
-        if (!checkArgs || checkArgs.length > 1) {
+        if (!args || args.length > 1) {
           throw new Error(messageList.error.invalidInput);
         }
-        this.sysInfo.runWithArg(...checkArgs);
+        this.sysInfo.runWithArg(...args);
         break;
 
       case COMMANDS.exit:
-        if (checkArgs) {
+        if (args) {
           throw new Error(messageList.error.invalidInput);
         }
         this.exit();
@@ -124,9 +122,12 @@ export class Control {
 
   async parseInput(text) {
     const [command, ...args] = text.split(' ');
+
     if (!text || args.length > 2) {
       throw new Error(messageList.error.invalidInput)
     }
-    return await this._runCommand(command, ...args);
+
+    const checkArgs = args.length > 0 ? args : null;
+    return await this._runCommand(command, checkArgs);
   }
 }

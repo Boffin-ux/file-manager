@@ -44,7 +44,7 @@ export class App {
     this.readline.on('line', async (input) => {
       try {
         const data = await this.control.parseInput(input);
-        this.showMessage(data);
+        this._showMessage(data);
       } catch (err) {
         this.readline.output.write(`${err.message}\n`);
       }
