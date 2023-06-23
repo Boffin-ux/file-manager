@@ -9,15 +9,23 @@ export class App {
     this.state = new PathConstructor();
     this.userName = userName;
     this.readline = createInterface({ input, output });
-    this.control = new Control(this.state, this.userName);
+    this.control = new Control(this.state, this.exit(this.userName));
   }
 
-  welcome() {
+  _welcome() {
     const startMsg = `Welcome to the File Manager, ${this.userName}!`;
     console.log(startMsg);
   }
 
-  async showMessage(msg) {
+  exit(userName = this.userName) {
+    return () => {
+      const finishMsg = `Thank you for using File Manager, ${userName}, goodbye!`;
+      console.log(finishMsg);
+      process.exit();
+    }
+  }
+
+  async _showMessage(msg) {
     if (msg) {
       return this.readline.output.write(`${msg}\n`);
     }
@@ -27,8 +35,8 @@ export class App {
 
   async init() {
     try {
-      this.welcome();
-      this.showMessage();
+      this._welcome();
+      this._showMessage();
     } catch (err) {
       this.readline.output.write(err.message);
     }
@@ -42,6 +50,6 @@ export class App {
       }
     });
     this.readline.resume();
-    this.readline.on('close', () => this.control.exit(this.userName));
+    this.readline.on('close', this.exit());
   }
 }

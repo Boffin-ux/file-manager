@@ -7,13 +7,13 @@ import { SysInfo } from './sysInfo.js';
 import { COMMANDS } from '../constants/commands.js';
 
 export class Control {
-  constructor(pathState, userName) {
-    this.userName = userName;
+  constructor(pathState, exitCb) {
     this.navigation = new Navigation(pathState);
     this.hash = new Hash(pathState);
     this.fs = new FileSystem(pathState);
     this.brotli = new Brotli(pathState);
     this.sysInfo = new SysInfo(pathState);
+    this.exit = exitCb;
   }
 
   async _runCommand(command, ...args) {
@@ -115,7 +115,7 @@ export class Control {
         if (checkArgs) {
           throw new Error(messageList.error.invalidInput);
         }
-        this.exit(this.userName);
+        this.exit();
         break;
 
       default: throw new Error(messageList.error.invalidInput);
@@ -128,11 +128,5 @@ export class Control {
       throw new Error(messageList.error.invalidInput)
     }
     return await this._runCommand(command, ...args);
-  }
-
-  exit(userName) {
-    const finishMsg = `Thank you for using File Manager, ${userName}, goodbye!`;
-    console.log(finishMsg);
-    process.exit();
   }
 }
