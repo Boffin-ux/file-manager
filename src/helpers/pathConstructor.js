@@ -52,4 +52,16 @@ export class PathConstructor extends State {
 
     return resolvePath;
   }
+
+  async targetPath(path, file) {
+    const resolvePath = await this.resolvePath(path, file);
+    const isFileExist = await this.isFileExist(resolvePath);
+    const isDir = await this.checkIsDir(resolve(path));
+
+    if (isFileExist || !isDir) {
+      throw new Error(messageList.error.operationFailed);
+    }
+
+    return resolvePath;
+  }
 }

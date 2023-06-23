@@ -1,6 +1,7 @@
 import { messageList } from '../constants/messageList.js';
 import { Navigation } from './navigation.js';
 import { Hash } from './hash.js';
+import { FileSystem } from './fileSystem.js';
 import { COMMANDS } from '../constants/commands.js';
 
 export class Control {
@@ -8,6 +9,7 @@ export class Control {
     this.userName = userName;
     this.navigation = new Navigation(pathState);
     this.hash = new Hash(pathState);
+    this.fs = new FileSystem(pathState);
   }
 
   exit(userName) {
@@ -54,6 +56,48 @@ export class Control {
           throw new Error(messageList.error.invalidInput);
         }
         await this.hash.calcHash(...checkArgs);
+        break;
+
+      case COMMANDS.add:
+        if (!checkArgs || checkArgs.length > 1) {
+          throw new Error(messageList.error.invalidInput);
+        }
+        await this.fs.addFile(...checkArgs);
+        break;
+
+      case COMMANDS.cat:
+        if (!checkArgs || checkArgs.length > 1) {
+          throw new Error(messageList.error.invalidInput);
+        }
+        await this.fs.cat(...checkArgs);
+        break;
+
+      case COMMANDS.rm:
+        if (!checkArgs || checkArgs.length > 1) {
+          throw new Error(messageList.error.invalidInput);
+        }
+        await this.fs.removeFile(...checkArgs);
+        break;
+
+      case COMMANDS.cp:
+        if (!checkArgs || checkArgs.length !== 2) {
+          throw new Error(messageList.error.invalidInput);
+        }
+        await this.fs.copyFile(...checkArgs);
+        break;
+
+      case COMMANDS.rn:
+        if (!checkArgs || checkArgs.length !== 2) {
+          throw new Error(messageList.error.invalidInput);
+        }
+        await this.fs.renameFile(...checkArgs);
+        break;
+
+      case COMMANDS.mv:
+        if (!checkArgs || checkArgs.length !== 2) {
+          throw new Error(messageList.error.invalidInput);
+        }
+        await this.fs.moveFile(...checkArgs);
         break;
 
       case COMMANDS.exit:
