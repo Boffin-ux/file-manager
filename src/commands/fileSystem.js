@@ -78,10 +78,10 @@ export class FileSystem {
   };
 
   async moveFile(fileName, path) {
-    try {
-      const pathToFile = await this.path.pathToFile(this.path.getCurrentPath(), fileName);
+    const pathToFile = await this.path.pathToFile(this.path.getCurrentPath(), fileName);
+    await this.copyFile(fileName, path);
 
-      await this.copyFile(fileName, path);
+    try {
       await rm(pathToFile);
     } catch (err) {
       throw new Error(messageList.error.operationFailed);

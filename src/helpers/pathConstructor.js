@@ -1,4 +1,4 @@
-import { resolve } from 'path';
+import { resolve, parse, isAbsolute } from 'path';
 import { stat, open } from 'fs/promises';
 import { messageList } from '../constants/messageList.js';
 import { State } from '../state.js';
@@ -8,7 +8,7 @@ export class PathConstructor extends State {
     try {
       return (await stat(path)).isDirectory();
     } catch (err) {
-      throw new Error(messageList.error.operationFailed);
+      return false;
     }
   }
 
@@ -21,7 +21,7 @@ export class PathConstructor extends State {
     }
   }
 
-  async resolvePath(currentPath, dir) {
+  async _resolvePath(currentPath, dir) {
     try {
       const path = resolve(currentPath, dir);
       return path;
@@ -30,8 +30,23 @@ export class PathConstructor extends State {
     }
   }
 
+  _isPathValid(path) {
+    if (path[1]) {
+      const valid = !isAbsolute(path) && path[1] === ':';
+      return !valid;
+    }
+
+    return false;
+  }
+
   async setPath(path, dir) {
-    const resolvePath = await this.resolvePath(path, dir);
+    const isPathValid = this._isPathValid(dir);
+
+    if (!isPathValid) {
+      throw new Error(messageList.error.invalidInput);
+    }
+
+    const resolvePath = await this._resolvePath(path, dir);
     const isDir = await this._checkIsDir(resolvePath);
 
     if (!isDir) {
@@ -43,10 +58,11 @@ export class PathConstructor extends State {
   }
 
   async pathToFile(path, file) {
-    const resolvePath = await this.resolvePath(path, file);
+    const resolvePath = await this._resolvePath(path, file);
     const isFileExist = await this._isFileExist(resolvePath);
+    const isDir = await this._checkIsDir(resolvePath);
 
-    if (!isFileExist) {
+    if (!isFileExist || isDir) {
       throw new Error(messageList.error.operationFailed);
     }
 
@@ -54,14 +70,22 @@ export class PathConstructor extends State {
   }
 
   async targetPath(path, file) {
-    const resolvePath = await this.resolvePath(path, file);
-    const isFileExist = await this._isFileExist(resolvePath);
-    const isDir = await this._checkIsDir(resolve(path));
+    const isPathValid = this._isPathValid(path);
+
+    if (!isPathValid) {
+      throw new Error(messageList.error.invalidInput);
+    }
+
+    const newPath = await this._resolvePath(this.getCurrentPath(), path);
+    const pathToFile = await this._resolvePath(newPath, file);
+
+    const isFileExist = await this._isFileExist(pathToFile);
+    const isDir = await this._checkIsDir(newPath);
 
     if (isFileExist || !isDir) {
       throw new Error(messageList.error.operationFailed);
     }
 
-    return resolvePath;
+    return pathToFile;
   }
 }

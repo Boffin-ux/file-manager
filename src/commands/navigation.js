@@ -7,19 +7,11 @@ export class Navigation {
   }
 
   async upControl() {
-    try {
-      await this.path.setPath(this.path.getCurrentPath(), '..');
-    } catch (err) {
-      throw new Error(messageList.error.operationFailed);
-    }
+    await this.path.setPath(this.path.getCurrentPath(), '..');
   }
 
   async cdControl(dir) {
-    try {
-      await this.path.setPath(this.path.getCurrentPath(), dir);
-    } catch (err) {
-      throw new Error(messageList.error.operationFailed);
-    }
+    await this.path.setPath(this.path.getCurrentPath(), dir);
   }
 
   async lsControl() {
