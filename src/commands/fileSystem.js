@@ -11,10 +11,10 @@ export class FileSystem {
 
   async addFile(fileName) {
     try {
-      const pathToFile = await this.path.resolvePath(this.path.getCurrentPath(), fileName);
+      const pathToFile = await this.path.destinationPath(this.path.getCurrentPath(), fileName);
       await writeFile(pathToFile, '', { flag: 'wx' });
 
-      console.log(messageList.msg.operationSuccessful);
+      return messageList.msg.operationSuccessful;
     } catch (err) {
       throw new Error(messageList.error.operationFailed);
     }
@@ -44,7 +44,7 @@ export class FileSystem {
       const pathToFile = await this.path.pathToFile(this.path.getCurrentPath(), fileName);
       await rm(pathToFile, { recursive: true });
 
-      console.log(messageList.msg.operationSuccessful);
+      return messageList.msg.operationSuccessful;
     } catch (err) {
       throw new Error(messageList.error.operationFailed);
     }
@@ -56,7 +56,7 @@ export class FileSystem {
       const targetPath = await this.path.targetPath(this.path.getCurrentPath(), newFileName);
       await rename(originalPath, targetPath);
 
-      console.log(messageList.msg.operationSuccessful);
+      return messageList.msg.operationSuccessful;
     } catch (err) {
       throw new Error(messageList.error.operationFailed);
     }
@@ -71,7 +71,7 @@ export class FileSystem {
 
       await pipeline(rs, ws);
 
-      console.log(messageList.msg.operationSuccessful);
+      return messageList.msg.operationSuccessful;
     } catch (err) {
       throw new Error(messageList.error.operationFailed);
     }

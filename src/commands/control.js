@@ -22,99 +22,85 @@ export class Control {
         if (args) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.navigation.upControl();
-        break;
+        return await this.navigation.upControl();
 
       case COMMANDS.ls:
         if (args) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.navigation.lsControl();
-        break;
+        return await this.navigation.lsControl();
 
       case COMMANDS.cd:
         if (!args || args.length > 1) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.navigation.cdControl(...args);
-        break;
+        return await this.navigation.cdControl(...args);
 
       case COMMANDS.hash:
         if (!args || args.length > 1) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.hash.calcHash(...args);
-        break;
+        return await this.hash.calcHash(...args);
 
       case COMMANDS.add:
         if (!args || args.length > 1) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.fs.addFile(...args);
-        break;
+        return await this.fs.addFile(...args);
 
       case COMMANDS.cat:
         if (!args || args.length > 1) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.fs.cat(...args);
-        break;
+        return await this.fs.cat(...args);
 
       case COMMANDS.rm:
         if (!args || args.length > 1) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.fs.removeFile(...args);
-        break;
+        return await this.fs.removeFile(...args);
 
       case COMMANDS.cp:
         if (!args || args.length !== 2) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.fs.copyFile(...args);
-        break;
+        return await this.fs.copyFile(...args);
 
       case COMMANDS.rn:
         if (!args || args.length !== 2) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.fs.renameFile(...args);
-        break;
+        return await this.fs.renameFile(...args);
 
       case COMMANDS.mv:
         if (!args || args.length !== 2) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.fs.moveFile(...args);
-        break;
+        return await this.fs.moveFile(...args);
 
       case COMMANDS.compress:
         if (!args || args.length !== 2) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.brotli.compress(...args);
-        break;
+        return await this.brotli.compress(...args);
 
       case COMMANDS.decompress:
         if (!args || args.length !== 2) {
           throw new Error(messageList.error.invalidInput);
         }
-        await this.brotli.decompress(...args);
-        break;
+        return await this.brotli.decompress(...args);
 
       case COMMANDS.os:
         if (!args || args.length > 1) {
           throw new Error(messageList.error.invalidInput);
         }
-        this.sysInfo.runWithArg(...args);
-        break;
+        return this.sysInfo.runWithArg(...args);
 
       case COMMANDS.exit:
         if (args) {
           throw new Error(messageList.error.invalidInput);
         }
-        this.exit();
-        break;
+        return this.exit();
 
       default: throw new Error(messageList.error.invalidInput);
     }

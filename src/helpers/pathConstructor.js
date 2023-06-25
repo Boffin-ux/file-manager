@@ -21,15 +21,6 @@ export class PathConstructor extends State {
     }
   }
 
-  async _resolvePath(currentPath, dir) {
-    try {
-      const path = resolve(currentPath, dir);
-      return path;
-    } catch (err) {
-      throw new Error(messageList.error.operationFailed);
-    }
-  }
-
   _isPathValid(path) {
     if (path[1]) {
       const valid = !isAbsolute(path) && path[1] === ':';
@@ -39,11 +30,20 @@ export class PathConstructor extends State {
     return false;
   }
 
+  async _resolvePath(currentPath, dir) {
+    try {
+      const path = resolve(currentPath, dir);
+      return path;
+    } catch (err) {
+      throw new Error(messageList.error.operationFailed);
+    }
+  }
+
   async setPath(path, dir) {
     const isPathValid = this._isPathValid(dir);
 
     if (!isPathValid) {
-      throw new Error(messageList.error.invalidInput);
+      throw new Error(messageList.error.operationFailed);
     }
 
     const resolvePath = await this._resolvePath(path, dir);
@@ -69,23 +69,31 @@ export class PathConstructor extends State {
     return resolvePath;
   }
 
+  async destinationPath(path, file) {
+    const resolvePath = await this._resolvePath(path, file);
+    const isFileExist = await this._isFileExist(resolvePath);
+
+    if (isFileExist) {
+      throw new Error(messageList.error.operationFailed);
+    }
+
+    return resolvePath;
+  }
+
   async targetPath(path, file) {
     const isPathValid = this._isPathValid(path);
 
     if (!isPathValid) {
-      throw new Error(messageList.error.invalidInput);
-    }
-
-    const newPath = await this._resolvePath(this.getCurrentPath(), path);
-    const pathToFile = await this._resolvePath(newPath, file);
-
-    const isFileExist = await this._isFileExist(pathToFile);
-    const isDir = await this._checkIsDir(newPath);
-
-    if (isFileExist || !isDir) {
       throw new Error(messageList.error.operationFailed);
     }
 
-    return pathToFile;
+    const newPath = await this._resolvePath(this.getCurrentPath(), path);
+    const isDir = await this._checkIsDir(newPath);
+
+    if (!isDir) {
+      throw new Error(messageList.error.operationFailed);
+    }
+
+    return this.destinationPath(newPath, file);
   }
 }

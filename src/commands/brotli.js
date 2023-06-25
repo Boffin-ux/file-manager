@@ -18,7 +18,7 @@ export class Brotli {
       const brotli = createBrotliCompress();
 
       await pipeline(rs, brotli, ws);
-      console.log(messageList.msg.operationSuccessful);
+      return messageList.msg.operationSuccessful;
     } catch (err) {
       throw new Error(messageList.error.operationFailed);
     }
@@ -34,7 +34,7 @@ export class Brotli {
       const brotli = createBrotliDecompress();
 
       await pipeline(rs, brotli, ws);
-      console.log(messageList.msg.operationSuccessful);
+      return messageList.msg.operationSuccessful;
     } catch (err) {
       throw new Error(messageList.error.operationFailed);
     }

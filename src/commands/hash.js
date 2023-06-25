@@ -17,7 +17,7 @@ export class Hash {
       const hash = createHash(this.algorithm);
       await pipeline(rs, hash);
 
-      console.log(hash.digest(this.encoding));
+      return hash.digest(this.encoding);
     } catch (err) {
       throw new Error(messageList.error.operationFailed);
     }
