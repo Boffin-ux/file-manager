@@ -53,7 +53,9 @@ export class FileSystem {
   async renameFile(fileName, newFileName) {
     try {
       const originalPath = await this.path.pathToFile(this.path.getCurrentPath(), fileName);
-      const targetPath = await this.path.targetPath(this.path.getCurrentPath(), newFileName);
+      const currentDir = this.path.getDir(originalPath);
+      const targetPath = await this.path.destinationPath(currentDir, newFileName);
+
       await rename(originalPath, targetPath);
 
       return messageList.msg.operationSuccessful;
@@ -64,10 +66,11 @@ export class FileSystem {
 
   async copyFile(fileName, path) {
     const pathToFile = await this.path.pathToFile(this.path.getCurrentPath(), fileName);
-    const targetPath = await this.path.targetPath(path, fileName);
+    const destinationPath = await this.path.targetPath(path, fileName);
+
     try {
       const rs = createReadStream(pathToFile);
-      const ws = createWriteStream(targetPath);
+      const ws = createWriteStream(destinationPath);
 
       await pipeline(rs, ws);
 

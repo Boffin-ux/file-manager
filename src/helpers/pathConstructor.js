@@ -30,9 +30,9 @@ export class PathConstructor extends State {
     return false;
   }
 
-  async _resolvePath(currentPath, dir) {
+  async _resolvePath(currentPath, newPath) {
     try {
-      const path = resolve(currentPath, dir);
+      const path = resolve(currentPath, newPath);
       return path;
     } catch (err) {
       throw new Error(messageList.error.operationFailed);
@@ -69,6 +69,10 @@ export class PathConstructor extends State {
     return resolvePath;
   }
 
+  getDir(pathToFile) {
+    return parse(pathToFile).dir;
+  }
+
   async destinationPath(path, file) {
     const resolvePath = await this._resolvePath(path, file);
     const isFileExist = await this._isFileExist(resolvePath);
@@ -81,6 +85,7 @@ export class PathConstructor extends State {
   }
 
   async targetPath(path, file) {
+    const currentFile = parse(file).base;
     const isPathValid = this._isPathValid(path);
 
     if (!isPathValid) {
@@ -94,6 +99,6 @@ export class PathConstructor extends State {
       throw new Error(messageList.error.operationFailed);
     }
 
-    return this.destinationPath(newPath, file);
+    return this.destinationPath(newPath, currentFile);
   }
 }
