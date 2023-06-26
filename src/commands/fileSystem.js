@@ -83,6 +83,7 @@ export class FileSystem {
 
     try {
       await rm(pathToFile);
+      return messageList.msg.operationSuccessful;
     } catch (err) {
       throw new Error(messageList.error.operationFailed);
     }
