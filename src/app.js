@@ -45,6 +45,7 @@ export class App {
         this._showMessage(data);
       } catch (err) {
         console.log(TEXT_COLORS.red, err.message);
+        this._showMessage();
       }
     });
     this.readline.resume();
